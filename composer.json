@@ -1,0 +1,19 @@
+{
+    "name": "sevhen/woo-cancel-order",
+    "description": "Enables customers and sellers to efficiently manage order cancellations in WooCommerce, improving flexibility and user experience.",
+    "type": "project",
+    "license": "GPL2",
+    "autoload": {
+        "psr-4": {
+            "Sevhen\\WooCancelOrder\\": "includes/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Vhanges",
+            "email": "115455282+Vhanges@users.noreply.github.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
