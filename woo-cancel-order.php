@@ -15,6 +15,7 @@ if(! defined('ABSPATH')) exit;
 
 require_once plugin_dir_path(__FILE__). 'vendor/autoload.php';
 
+use Sevhen\WooCancelOrder\CancelStatuses;
 use Sevhen\WooCancelOrder\PluginTables;
 
 if (!class_exists ('Woo_Cancel_Order')){
@@ -26,6 +27,10 @@ if (!class_exists ('Woo_Cancel_Order')){
         {
             //Initialize plugin database tables
             register_activation_hook(__FILE__, [$this, 'initializeTables']);
+
+            //Register Cancel Statuses
+            new CancelStatuses();
+        
         }
 
         public function initializeTables(){

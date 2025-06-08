@@ -6,7 +6,8 @@ if(! defined('ABSPATH')) exit;
 if(! class_exists('PluginTables')) {
 
 
-    class PluginTables {
+    class PluginTables
+    {
 
         /**
          * Initialize plugins schema 

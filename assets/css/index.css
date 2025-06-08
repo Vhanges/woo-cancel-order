@@ -1,0 +1,14 @@
+mark.status-request-cancel {
+    background-color: #AEC6CF !important;
+    color: #244054 !important;
+}
+
+mark.status-approved-cancel {
+    background-color: #76dd79 !important;
+    color: #fbfbfb !important;
+}
+
+mark.status-cancel-rejected {
+    background-color: #F4C2C2 !important;
+    color: #C62828 !important;/
+}
