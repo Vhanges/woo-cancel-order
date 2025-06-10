@@ -12,3 +12,5 @@ mark.status-cancel-rejected {
     background-color: #F4C2C2 !important;
     color: #C62828 !important;/
 }
+
+#custom-order-meta-box { background: red !important; }
