@@ -29,13 +29,13 @@ if(! class_exists('Utility')) {
             $this->table = $wpdb->prefix. "cancel_order"; 
         }
 
-        public function get_cancel_request($order_id)
+        protected function get_cancel_request($order_id)
         {
             $query = $this->wpdb->prepare("SELECT * FROM $this->table WHERE wc_order_id = $order_id");
             return $this->wpdb->get_row($query);
         }
 
-        public function  reject($order_id)
+        protected function  reject($order_id)
         {
             $order = \wc_get_order($order_id);
             $order->update_status($this->status['reject']);
@@ -44,7 +44,7 @@ if(! class_exists('Utility')) {
             return true;
         }
 
-        public function request($order_id, $reason)
+        protected function request($order_id, $reason)
         {
             $result = true;
 
@@ -69,7 +69,7 @@ if(! class_exists('Utility')) {
 
         }
 
-        public function approve($order_id)
+        protected function approve($order_id)
         {
             $order = \wc_get_order($order_id);
 
