@@ -3,6 +3,9 @@ namespace Sevhen\WooCancelOrder;
 
 if(! defined('ABSPATH')) exit;
 
+use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
+
+
 if(! class_exists('Utility')) {
 
 
@@ -28,6 +31,14 @@ if(! class_exists('Utility')) {
             $this->wpdb = $wpdb;
             $this->table = $wpdb->prefix. "cancel_order"; 
         }
+
+        /**
+         * ===========================================================
+         *  Model
+         * -----------------------------------------------------------
+         *  Used for database interaction  
+         * ===========================================================
+         */
 
         protected function get_cancel_request($order_id)
         {
@@ -81,6 +92,25 @@ if(! class_exists('Utility')) {
                 error_log("Order ID {$order_id} is already approved. No update needed.");
                 return false;
             }
+        }
+
+        /**
+         * ===========================================================
+         *  Helpers
+         * -----------------------------------------------------------
+         *  Utility functions for internal plugin operations
+         * ===========================================================
+         */
+
+        /**
+         * Retrieves the correct WooCommerce screen ID based on HPOS support.
+         */
+        protected function get_screen_id() {
+
+            return class_exists('\\Automattic\\WooCommerce\\Internal\\DataStores\\Orders\\CustomOrdersTableController') &&
+            wc_get_container()->get(CustomOrdersTableController::class)->custom_orders_table_usage_is_enabled()
+            ? wc_get_page_screen_id('shop-order')
+            : 'shop_order';
         }
 
     }

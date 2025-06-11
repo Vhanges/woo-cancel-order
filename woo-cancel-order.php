@@ -17,7 +17,7 @@ require_once plugin_dir_path(__FILE__). 'vendor/autoload.php';
 
 use Sevhen\WooCancelOrder\CancelOrder;
 use Sevhen\WooCancelOrder\CancelStatuses;
-use Sevhen\WooCancelOrder\Metabox;
+use Sevhen\WooCancelOrder\WooElements;
 use Sevhen\WooCancelOrder\PluginTables;
 
 if (!class_exists ('Woo_Cancel_Order')){
@@ -35,10 +35,11 @@ if (!class_exists ('Woo_Cancel_Order')){
             //Register Cancel Statuses
             new CancelStatuses();
             new CancelOrder();
-            new Metabox();
+            new WooElements();
         
         }
 
+        // Once triggered, migrations of the plugins table will be initiated
         public function initialize_tables(){
 
            $table = new PluginTables();
@@ -46,6 +47,7 @@ if (!class_exists ('Woo_Cancel_Order')){
 
         }
 
+        // Enqueue important scripts for internal and external plugin operations
         public function enqueue_scripts() {
 
 
