@@ -29,12 +29,14 @@ if(! class_exists('PluginTables')) {
 
             if( $wpdb->get_var("SHOW TABLES LIKE '$cancel_table'" == $cancel_table) ) return;
 
-             $sql_cancel_table = "
+            $sql_cancel_table = "
                 CREATE TABLE $cancel_table (
                     cancel_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
                     wc_order_id BIGINT UNSIGNED NOT NULL,
                     reason TEXT NOT NULL,
                     status VARCHAR(100) NOT NULL,
+                    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    expires_at DATETIME NULL DEFAULT NULL,
                     PRIMARY KEY (cancel_id),
                     FOREIGN KEY (wc_order_id) REFERENCES {$wpdb->prefix}posts(ID) ON DELETE CASCADE
                 ) $charset_collate;
