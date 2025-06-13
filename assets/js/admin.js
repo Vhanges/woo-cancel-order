@@ -1,6 +1,16 @@
 jQuery(document).ready(function ($) {
 
-    $(document).on("click", ".woo-cancel-order-action", function (e) {
+    /* ============================================================
+     * Code for approving and rejecting cancel request
+     * ------------------------------------------------------------
+     * - Listens for cancel button clicks
+     * - Sends AJAX request to server
+     * - Handles success/error responses
+     * - Scrolls to order data section after action
+     * ============================================================
+     */
+
+    $(document).on("click", ".cancel-admin-action", function (e) {
         e.preventDefault();
 
         const $btn = $(this);
@@ -44,6 +54,7 @@ jQuery(document).ready(function ($) {
         });
     });
 
+
     function scrollToOrderData() {
     if (document.readyState === "complete") {
         let orderDataElement = $("#order_data");
@@ -60,6 +71,23 @@ jQuery(document).ready(function ($) {
             }
         });
     }
+
+    /* ============================================================
+     * Code for approving and rejecting cancel request
+     * ------------------------------------------------------------
+     * - Listens for cancel button clicks
+     * - Sends AJAX request to server
+     * - Handles success/error responses
+     * - Scrolls to order data section after action
+     * ============================================================
+     */
+
+$(document).on("click", ".initiate_cancel_order", function (e) {
+    e.preventDefault();
+    console.log("Button clicked! Event firing successfully.");
+});
+
+
 }
 });
 
