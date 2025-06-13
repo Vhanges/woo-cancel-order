@@ -13,6 +13,8 @@ if(! class_exists('CancelOrder')) {
         
         public function __construct()
         {
+            // Grabs the ID when checkout order is processed
+            add_action("woocommerce_thankyou", [$this, "get_order"], 20, 1);
             
             // Register AJAX handlers
             add_action("wp_ajax_woo_fetch_cancel_request", [$this, "ajax_fetch_cancel_request"]);
@@ -20,6 +22,15 @@ if(! class_exists('CancelOrder')) {
             add_action("wp_ajax_woo_cancel_order_reject", [$this, "ajax_reject_order"]);
             add_action("wp_ajax_woo_cancel_request", [$this, "ajax_cancel_request"]);
             add_action("wp_ajax_nopriv_woo_cancel_request", [$this, "ajax_cancel_request"]);
+        }
+
+        /**
+         *  Get customer order id when order is processed
+         */
+
+        public function get_order($order_id)
+        {
+            $this->set_fetched_order($order_id);
         }
 
         /**

@@ -6,6 +6,7 @@ use Exception;
 if(! defined('ABSPATH')) exit;
 
 use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
+use wpdb;
 
 
 if(! class_exists('Utility')) {
@@ -15,7 +16,7 @@ if(! class_exists('Utility')) {
 
         public static $plugin_name = "[Woo Cancel Order] ";
 
-        private $wpdb;
+        protected $wpdb;
 
 
         private $table;
@@ -42,13 +43,38 @@ if(! class_exists('Utility')) {
          * ===========================================================
          */
 
+        protected function set_fetched_order($order_id) {
+
+            global $wpdb;
+
+            $current_time = current_time('mysql'); 
+            $expires_at = date('Y-m-d H:i:s', strtotime('+5 minutes', strtotime($current_time)));
+
+            $data = [
+                'wc_order_id'  => $order_id,
+                'created_at'   => $current_time,
+                'expires_at'   => $expires_at
+            ];
+
+            $format = ['%d', '%s', '%s'];
+
+
+            $result = $wpdb->insert($wpdb->prefix. "cancel_order", $data, $format);
+
+            if ($result === false) {
+                error_log("$this->plugin_name Failed to insert cancel order record for Order ID: $order_id");
+            }
+
+        }
+
+
         protected function get_cancel_request($order_id)
         {
             $query = $this->wpdb->prepare("SELECT * FROM $this->table WHERE wc_order_id = $order_id");
             return $this->wpdb->get_row($query);
         }
 
-        protected function  reject($order_id)
+        protected function reject($order_id)
         {
             $order = \wc_get_order($order_id);
             $order->update_status($this->status['reject']);
@@ -57,22 +83,21 @@ if(! class_exists('Utility')) {
             return true;
         }
 
-        protected function request($order_id, $reason)
+        protected function request($order_id, $reason):bool
         {
             $result = true;
 
-            $data = [
-                'wc_order_id' => $order_id,
-                'reason' => $reason,
-                'status' => $this->status['request']
-            ];
+            $result = $this->wpdb->update(
+                $this->table,
+                [
+                    'reason' => $reason,
+                    'status' => $this->status['request']
+                ],
+                ['wc_order_id' => $order_id], 
+                ['%s', '%s'],
+                ['%d'] 
+            );
 
-            $format = [
-                '%s',
-                '%s'
-            ];
-
-            $result = $this->wpdb->insert($this->table, $data, $format);
 
             if(!$result){
                 return $result = false;
@@ -91,7 +116,7 @@ if(! class_exists('Utility')) {
                 $order->save();
                 return true;
             } else {
-                error_log("Order ID {$order_id} is already approved. No update needed.");
+                error_log("$this->plugin_name Order ID {$order_id} is already approved. No update needed.");
                 return false;
             }
         }
@@ -140,13 +165,13 @@ if(! class_exists('Utility')) {
 
                 // Ensure both values are treated as timestamps
                 if ($result && strtotime($result) < strtotime($expired_threshold)) {
-                    throw new Exception("The cancel request for order ID {$order_id} has expired.");
+                    throw new Exception("$this->plugin_name The cancel request for order ID {$order_id} has expired.");
                 }
 
                 return $result ?: null;
 
             } catch (Exception $e) {
-                error_log('Error fetching cancel order ID: ' . $e->getMessage());
+                error_log("$this->plugin_name Error fetching cancel order ID: " . $e->getMessage());
                 return null;
             }
         }

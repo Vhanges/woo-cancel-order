@@ -25,8 +25,9 @@ if (!class_exists('Woo_Cancel_Order')) {
     class Woo_Cancel_Order {
         
         public function __construct() {
+            
             // Initialize plugin database tables
-            register_activation_hook(__FILE__, [$this, 'initialize_tables']);
+            register_activation_hook(__FILE__, callback: [$this, 'initialize_tables']);
 
             // Enqueue Admin Scripts
             add_action('admin_enqueue_scripts', [$this, 'admin_enqueue_scripts']);
