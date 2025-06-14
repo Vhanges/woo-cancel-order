@@ -66,10 +66,8 @@ if (!class_exists('WooElements')){
 
         /**
          * TODO List:
-         * - [ ] Create a rest endpoint for action to work and load .
-         * - [ ] Create a separate page to handle the cancel form template.
-         * - [ ] Create another action button for users to be able to check their cancel request details.
-         * - [ ] Modify logic on when to display the action button implement the expired_at column for verfication.
+         * - [ ] Create a form
+         * - [ ] Create a ajax query for processing the form
          * - [ ] Create an event job on plugin tables so we can delete expired and unused requests.
          */
 

@@ -70,6 +70,11 @@ if (!class_exists('Woo_Cancel_Order')) {
                 ['jquery'], '1.0', true
             );
 
+            wp_enqueue_style(
+                'cancel-form-css',
+                plugins_url('assets/css/cancel-form.css', __FILE__)
+            );
+
             wp_localize_script('customer-cancel-ajax-script', 'cancel_ajax_object', [
                 'ajax_url' => admin_url('admin-ajax.php'),
                 'nonce'    => wp_create_nonce('plugin_nonce')

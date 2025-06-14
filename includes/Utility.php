@@ -14,7 +14,7 @@ if(! class_exists('Utility')) {
 
     class Utility {
 
-        public static $plugin_name = "[Woo Cancel Order] ";
+        public $plugin_name = "[Woo Cancel Order] ";
 
         protected $wpdb;
 
@@ -62,7 +62,7 @@ if(! class_exists('Utility')) {
             $result = $wpdb->insert($wpdb->prefix. "cancel_order", $data, $format);
 
             if ($result === false) {
-                error_log("$this->plugin_name Failed to insert cancel order record for Order ID: $order_id");
+                error_log("{$this->plugin_name} Failed to insert cancel order record for Order ID: $order_id");
             }
 
         }
