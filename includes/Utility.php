@@ -85,10 +85,14 @@ if(! class_exists('Utility')) {
 
         protected function request($order_id, $reason):bool
         {
+            global $wpdb;
+
             $result = true;
 
-            $result = $this->wpdb->update(
-                $this->table,
+            if(!isset($order_id) && !isset($reason)) return false;
+
+            $result = $wpdb->update(
+                $wpdb->prefix. "cancel_order",
                 [
                     'reason' => $reason,
                     'status' => $this->status['request']

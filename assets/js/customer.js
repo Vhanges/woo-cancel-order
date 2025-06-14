@@ -1,4 +1,7 @@
 jQuery(document).ready(function ($) {
+
+    window.order_id = 0;
+
     // Inject the modal HTML into the page
     if (!$('#cancel-form-modal').length) {
         $('body').append(`
@@ -28,8 +31,8 @@ jQuery(document).ready(function ($) {
     
                         <span class="modal-buttons">
                             <button class="initial-cancel submit-cancel-request" type="submit">Submit</button>
-                            <button class="initial-cancel abort-cancel-request order-cancel-modal-close" submit-cancel-request type="submit">Keep My Order</button>
-                            <button class="cancel-submitted abort-cancel-request order-cancel-modal-close" type="submit" style="display:none;">Return to my Orders</button>
+                            <button class="initial-cancel abort-cancel-request order-cancel-modal-close" submit-cancel-request >Keep My Order</button>
+                            <button class="cancel-submitted abort-cancel-request order-cancel-modal-close" style="display:none;">Return to my Orders</button>
                         </span>
                     </form>
                 </div>
@@ -40,8 +43,9 @@ jQuery(document).ready(function ($) {
     // Open modal on button click and set order ID
     $(document).on("click", ".initiate_cancel_order", function (e) {
         e.preventDefault();
-        var orderId = $(this).data("order-id");
-        $("#order-cancel-form").attr("data-order-id", orderId);
+        let order_id = $(this).attr("href");
+        order_id = order_id.replace(/#/g, "");
+        $("#order-cancel-form").attr("data-order_id", order_id);
         $("#cancel-form-modal").show();
     });
 
@@ -57,9 +61,47 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    $(document).on("click", ".submit-cancel-request", function(){
-        $(".initial-cancel").hide(); 
-        $(".cancel-submitted").show(); 
+        // Handle form submission
+    $(document).on("submit", "#order-cancel-form", function (e) {
+        e.preventDefault();
+        
+        const order_id = $(this).data("order_id");
+        const reason = $("#cancel-reason").val().trim();
+
+        if (!reason) {
+            alert("Please provide a reason for cancellation.");
+            return;
+        }
+
+        $.ajax({
+            url: cancel_ajax_object.ajax_url,
+            method: "POST",
+            data: {
+            action: "nopriv_woo_cancel_request",
+            order_id: order_id,
+            reason: reason,
+            security: cancel_ajax_object.nonce
+            },
+            beforeSend: function () {
+            // Optionally show a loader
+            },
+            success: function (response) {
+            if (response.success) {
+                $(".initial-cancel").hide();
+                $(".cancel-submitted").show();
+                $("#cancel-form-modal").hide();
+                alert("Order cancelled successfully!");
+            } else {
+                alert(
+                (response.data && response.data.message ? response.data.message : "Cancellation failed.")
+                );
+            }
+            },
+            error: function (xhr, status, error) {
+            alert("An error occurred: " + error + ". Please try again.");
+            $("#cancel-form-modal").hide();
+            }
+        });
     });
 
 

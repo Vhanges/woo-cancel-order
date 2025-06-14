@@ -86,7 +86,7 @@ if (!class_exists('WooElements')){
 
             // Add custom button WITH a URL
             $actions['initiate_cancel_order'] = [
-                'url'   => '#', 
+                'url'   => '#'. $order_id, 
                 'name'  => __('Cancel Order', 'woo-cancel-order'),
                 'class' => 'customer-initiate-cancel',
                 'data-order-id' => $order_id 
