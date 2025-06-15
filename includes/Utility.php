@@ -156,9 +156,13 @@ if(! class_exists('Utility')) {
         protected function validate_order($order_id)
         {
             try {
-                global $wpdb;
-                $expired_threshold = date('Y-m-d H:i:s', strtotime('-5 minutes'));
+                global $wpdb;          
+                
 
+                $current_time = strtotime(current_time('mysql')); // Convert to timestamp
+                $expired_threshold = date('Y-m-d H:i:s', $current_time);
+
+                
                 // Fetch the expiration time from the database
                 $query = $wpdb->prepare(
                     "SELECT expires_at FROM {$wpdb->prefix}cancel_order WHERE wc_order_id = %d",
@@ -166,16 +170,16 @@ if(! class_exists('Utility')) {
                 );
                 
                 $result = $wpdb->get_var($query);
-
                 // Ensure both values are treated as timestamps
-                if ($result && strtotime($result) < strtotime($expired_threshold)) {
+                if ($result && strtotime($expired_threshold) >= strtotime($result)) {
                     throw new Exception("$this->plugin_name The cancel request for order ID {$order_id} has expired.");
                 }
-
+                
+                // error_log("Threshold: ". strtotime($expired_threshold) ." Due: ".strtotime($result));
                 return $result ?: null;
 
             } catch (Exception $e) {
-                error_log("$this->plugin_name Error fetching cancel order ID: " . $e->getMessage());
+                error_log($e->getMessage());
                 return null;
             }
         }
