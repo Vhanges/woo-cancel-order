@@ -67,12 +67,29 @@ if(! class_exists('Utility')) {
 
         }
 
+        protected function get_cancel_request($order_id) {
+            global $wpdb;
+            $table = $wpdb->prefix . "cancel_order";
 
-        protected function get_cancel_request($order_id)
-        {
-            $query = $this->wpdb->prepare("SELECT * FROM $this->table WHERE wc_order_id = $order_id");
-            return $this->wpdb->get_row($query);
+            $query = $wpdb->prepare(
+                "SELECT * FROM $table WHERE wc_order_id = %d AND status = %s",
+                $order_id,
+                $this->status['request']
+            );
+
+            $result = $wpdb->get_row($query);
+
+            error_log("RESULT: " . print_r($result, true));
+
+            if(! $result) {
+                return null;
+            }
+
+            return $result;
+
+
         }
+
 
         protected function reject($order_id)
         {
@@ -175,7 +192,7 @@ if(! class_exists('Utility')) {
                     throw new Exception("$this->plugin_name The cancel request for order ID {$order_id} has expired.");
                 }
                 
-                // error_log("Threshold: ". strtotime($expired_threshold) ." Due: ".strtotime($result));
+                error_log("Threshold: ". strtotime($expired_threshold) ." Due: ".strtotime($result));
                 return $result ?: null;
 
             } catch (Exception $e) {

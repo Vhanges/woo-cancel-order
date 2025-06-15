@@ -45,12 +45,22 @@ if (!class_exists('WooElements')){
         public function render_meta_box($post) {
             $order = $this->get_order_object($post);
             $order_id = $order ? $order->get_id() : 0;
+
+            $request = $this->get_cancel_request($order_id);
             
+            if($request == null) {
+                echo '<div class="custom-order-meta-box" style="padding:30px; border:1px solid #e5e5e5; background:#fafafa;">';
+                echo '<h1 style="font-size:20px; margin-bottom:10px;"><strong>No Cancel Request for this order</strong></h1>';
+                echo '</div>';
+
+                return;
+            }
+
             // Output the meta box HTML
             echo '<div class="custom-order-meta-box" style="padding:30px; border:1px solid #e5e5e5; background:#fafafa;">';
-            echo '<h1 style="font-size:20px; margin-bottom:10px;"><strong>This customer is requesting cancellation</strong></h1>';
+            echo '<h1 style="font-size:20px; margin-bottom:10px;"><strong>This customer is requesting for cancellation</strong></h1>';
             echo '<h3 style="margin-bottom:5px;"><strong>Reason: </strong></h3>';
-            echo '<p style="margin-bottom:20px;">I think I might be smarter than Iron Man, so I will cancel this order. Thanks.</p>';
+            echo '<p style="margin-bottom:20px;">'. esc_html($request->reason).'</p>';
             echo '<div style="display:flex; gap:10px; justify-content:end; border-top:solid 1px #EDEDED; padding:20px 0 0 0;">';
             echo '<button type="button" class="button button-primary cancel-admin-action" data-action="woo_cancel_order_reject"  data-order_id="'.$order_id.'"style="background:#d63638; border-color:#d63638;">Reject</button>';
             echo '<button type="button" class="button button-primary cancel-admin-action" data-action="woo_cancel_order_approve" data-order_id="'.$order_id.'"style="background:#00a32a; border-color:#00a32a;">Approve</button>';
@@ -66,7 +76,6 @@ if (!class_exists('WooElements')){
 
         /**
          * TODO List:
-         * - [ ] Create a form
          * - [ ] Create a ajax query for processing the form
          * - [ ] Create an event job on plugin tables so we can delete expired and unused requests.
          */
@@ -89,7 +98,6 @@ if (!class_exists('WooElements')){
                 'url'   => '#'. $order_id, 
                 'name'  => __('Cancel Order', 'woo-cancel-order'),
                 'class' => 'customer-initiate-cancel',
-                'data-order-id' => $order_id 
             ];
 
         

@@ -14,7 +14,7 @@ if(! class_exists('CancelOrder')) {
         public function __construct()
         {
             // Grabs the ID when checkout order is processed
-            add_action("woocommerce_thankyou", [$this, "get_order"], 20, 1);
+            add_action("woocommerce_new_order", [$this, "get_order"], 10, 1);
             
             // Register AJAX handlers
             add_action("wp_ajax_woo_fetch_cancel_request", [$this, "ajax_fetch_cancel_request"]);
@@ -43,7 +43,7 @@ if(! class_exists('CancelOrder')) {
             }
 
             $order_id = intval($_POST['order_id']);
-            $result = $this->approve($order_id);
+            $result = $this->approve(order_id: $order_id);
 
             if ($result) {
 
