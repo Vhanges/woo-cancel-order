@@ -23,7 +23,7 @@ if(! class_exists('Utility')) {
 
         private $status = [
             'request' => 'request-cancel',
-            'approve' => 'approved-cancel',
+            'approve' => 'cancelled',
             'reject' => 'cancel-rejected'
         ];
 
@@ -79,7 +79,7 @@ if(! class_exists('Utility')) {
 
             $result = $wpdb->get_row($query);
 
-            error_log("RESULT: " . print_r($result, true));
+            // error_log("RESULT: " . print_r($result, true));
 
             if(! $result) {
                 return null;
@@ -94,19 +94,43 @@ if(! class_exists('Utility')) {
         protected function reject($order_id)
         {
             $order = \wc_get_order($order_id);
-            $order->update_status($this->status['reject']);
-            $order->save();
+
+            $to = $order->get_billing_email();
+            $subject = 'Your Cancellation Request Was Rejected';
+            $heading = 'Cancellation Rejected';
+
+            $message = sprintf(
+                'Hi %s,<br><br>Thank you for your cancellation request for Order #%d. After careful review, we’re unable to approve your request. If you have any questions or need further assistance, please feel free to contact our support team.<br><br>Thank you for your understanding.',
+                $order->get_billing_first_name(),
+                $order->get_id()
+            );
+
+            $wrapped = \WC()->mailer()->wrap_message( $heading, $message );
+            $headers = [ 'Content-Type: text/html; charset=UTF-8' ];
+
+            wp_mail( $to, $subject, $wrapped, $headers );
 
             return true;
         }
 
-        protected function request($order_id, $reason):bool
+        protected function request($order_id, $reason)
         {
             global $wpdb;
 
             $result = true;
 
             if(!isset($order_id) && !isset($reason)) return false;
+
+            $validation_result = $this->validate_order($order_id);
+            if ($validation_result == null) {
+                error_log("THIS ORDER IS EXPIRED!");
+                
+                wp_send_json_error([
+                    'message' => "We're sorry, but the cancellation period for your order has expired and we can't process this request. If you have any questions, please contact our support team."
+                ]);
+
+                return;
+            }
 
             $result = $wpdb->update(
                 $wpdb->prefix. "cancel_order",
@@ -119,9 +143,13 @@ if(! class_exists('Utility')) {
                 ['%d'] 
             );
 
+            $order = \wc_get_order($order_id);
+            $order->update_status($this->status['request']);
+            $order->save();
+
 
             if(!$result){
-                return $result = false;
+                return false;
             }
 
             return $result;

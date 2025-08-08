@@ -72,6 +72,10 @@
     gap: 3rem;
 }
 
+.modal-buttons > button:hover {
+    cursor: pointer;
+}
+
 .modal-buttons > .submit-cancel-request {
     all: unset;
 }

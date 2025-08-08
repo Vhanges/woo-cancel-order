@@ -9,6 +9,14 @@ if(! class_exists('PluginTables')) {
     class PluginTables
     {
 
+        public $plugin_name = '';
+
+        public function __construct(){
+            $utility = new Utility();
+
+            $this->plugin_name = $utility->plugin_name;
+        }
+
         /**
          * Initialize plugins schema 
          * 
@@ -47,10 +55,10 @@ if(! class_exists('PluginTables')) {
             if( $wpdb->get_var("SHOW TABLES LIKE '$cancel_table'" == $cancel_table) ) 
             
             if (!empty($wpdb->last_error)) {
-                error_log(Utility::$plugin_name . $wpdb->last_error);
+                error_log($this->plugin_name . $wpdb->last_error);
             }
 
-            return error_log(Utility::$plugin_name. "Plugin's table is successfully created");
+            return error_log($this->plugin_name. "Plugin's table is successfully created");
         }
 
     }

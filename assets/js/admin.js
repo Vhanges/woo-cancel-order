@@ -16,6 +16,12 @@ jQuery(document).ready(function ($) {
         const $btn = $(this);
         const orderId = $btn.data("order_id");
         const actionType = $btn.data("action");
+
+        const confirmation = confirm("Are you sure you want to proceed with this action?");
+        if (!confirmation) {
+            return; // Exit early if the user cancels
+        }
+
         console.log(actionType);
         $btn.prop("disabled", true);
 
